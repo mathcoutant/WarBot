@@ -457,7 +457,7 @@ class RedHarvester extends Harvester implements RedRobot {
     for(Object r : robots){
        Robot robot = (Robot) r;
       if(robot.who == brain[1].z){
-        if(dist(robot, this) < 2){
+        if(dist(robot.pos.x, robot.pos.y, pos.x, pos.y) < 2){
           giveFood(robot, carryingFood*0.75f);
           brain[1] = new Pvector();
         }
