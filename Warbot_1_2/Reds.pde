@@ -387,6 +387,9 @@ class RedHarvester extends Harvester implements RedRobot {
     // handle messages received
     handleMessages();
 
+    if(brain[1].z == 1){
+      moveAndGive();   
+    }
     // check for the closest burger
     Burger b = (Burger)minDist(perceiveBurgers());
     if ((b != null) && (distance(b) <= 2))
@@ -402,6 +405,11 @@ class RedHarvester extends Harvester implements RedRobot {
     if (brain[4].x == 1) {
       // go back to the base
       goBackToBase();
+      
+    if(carryingFood > 200)
+      
+      
+ 
 
       // if enough energy and food
       if ((energy > 100) && (carryingFood > 100)) {
@@ -417,6 +425,29 @@ class RedHarvester extends Harvester implements RedRobot {
     } else
       // if not in the "go back" state, explore and collect food
       goAndEat();
+  }
+
+  void moveAndGive(){
+    heading = atan2(brain[1].x - pos.x, brain[1].y - pos.y);
+    forward(speed);
+    ArrayList robots = perceiveRobots(friend, EXPLORER);
+    for(Object robot : robots){
+      if(robot.who == brain[1].z){
+        if(dist(robot, this) < 2)
+          giveFood(robot, carryingFood*0.75f);
+      }
+    }
+  }
+
+  void informAboutFull(){
+    Explorer explo = (Explorer)oneOf(perceiveRobots(friend, EXPLORER));
+    float[] args = new float[2];
+    args[0] = 1;
+    brain[1].x = explo.pos.x;
+    brain[1].y = explo.pos.y;
+    brain[1].z = explo.who;
+    Msg msg = new Msg(INFORM_ABOUT_FULL, who, explo.who, args);
+    explo.messages.add(msg);
   }
 
   //
@@ -589,6 +620,7 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
   // > defines the behavior of the agent
   //
   void go() {
+    handleMessages();
     // if no energy or no bullets
     if ((energy < 100) || (bullets == 0))
       // go back to the base
@@ -604,12 +636,41 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
       if (target())
         // shoot on the target
         launchBullet(towards(brain[0]));
+      else if(brain[4].z == 1){
+        moveToTarget();
+      }
       else
         // else explore randomly
         randomMove(45);
     }
   }
 
+  void handleMessages(){
+        Message msg;
+    // for all messages
+    for (int i=0; i<messages.size(); i++) {
+      msg = messages.get(i);
+      if (msg.type == INFORM_ABOUT_TARGET) {
+        // if the message is a request for energy
+        if(!target()){
+           brain[0].x = msg.args[0];
+           brain[0].y = msg.args[1];
+           brain[0].z = msg.args[2];
+           brain[4].z = 1;
+        }
+      }
+    }
+    // clear the message queue
+    flushMessages();
+    
+    
+  }
+
+  void moveToTarget(){
+     heading = atan2(brain[0].x - pos.x, brain[0].y - pos.y);
+     forward(speed);
+  }
+  
   //
   // selectTarget
   // ============
