@@ -459,7 +459,7 @@ class RedHarvester extends Harvester implements RedRobot {
       if(robot.who == brain[1].z){
         if(dist(robot.pos.x, robot.pos.y, pos.x, pos.y) < 2){
           giveFood(robot, carryingFood*0.75f);
-          brain[1] = new Pvector();
+          brain[1] = new PVector();
         }
       } 
     }
@@ -472,7 +472,7 @@ class RedHarvester extends Harvester implements RedRobot {
     brain[1].x = explo.pos.x;
     brain[1].y = explo.pos.y;
     brain[1].z = explo.who;
-    Msg msg = new Msg(INFORM_ABOUT_FULL, who, explo.who, args);
+    Message msg = new Message(INFORM_ABOUT_FULL, who, explo.who, args);
     explo.messages.add(msg);
   }
 
