@@ -201,6 +201,11 @@ class RedExplorer extends Explorer implements RedRobot {
   // > defines the behavior of the agent
   //
   void go() {
+    
+    handleMessages();
+    
+    if(brain[3].x != 0) return;
+    
     // if food to deposit or too few energy
     if ((carryingFood > 200) || (energy < 100))
       // time to go back to base
@@ -241,6 +246,24 @@ class RedExplorer extends Explorer implements RedRobot {
     brain[0].y = p.y;
     brain[0].z = breed;
     brain[4].y = 1;
+  }
+  
+   void handleMessages(){
+    Message msg;
+    // for all messages
+    for (int i=0; i<messages.size(); i++) {
+      msg = messages.get(i);
+      if (msg.type == INFORM_ABOUT_FULL) {
+        if(brain[3].x == msg.alice)
+          brain[3].x = 0;
+        else
+          brain[3].x = msg.alice;
+      }
+    }
+    // clear the message queue
+    flushMessages();
+    
+    
   }
 
   //
@@ -441,11 +464,14 @@ class RedHarvester extends Harvester implements RedRobot {
     heading = atan2(brain[1].x - pos.x, brain[1].y - pos.y);
     forward(speed);
     ArrayList robots = perceiveRobots(friend, EXPLORER);
-    for(Object robot : robots){
-      if(robot.who == brain[1].z){
-        if(dist(robot, this) < 2)
+    for(Object r : robots){
+       Robot robot = (Robot) r;
+      if(robot. == brain[1].z){
+        if(dist(robot, this) < 2){
           giveFood(robot, carryingFood*0.75f);
-      }
+          brain[1] = new Pvector();
+        }
+      } 
     }
   }
 
