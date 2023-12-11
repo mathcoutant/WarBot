@@ -123,6 +123,42 @@ class RedBase extends Base implements RedRobot {
           // gives the requested amount of bullets only if at least 1000 units of energy left after
           giveBullets(msg.alice, msg.args[0]);
         }
+      } else if (msg.type == INFORM_ABOUT_XYTARGET) {
+        brain[0].x = msg.args[0];
+        brain[0].y = msg.args[1];
+      }
+    }
+    // clear the message queue
+    flushMessages();
+  }
+  
+  //
+  // informAboutEnemyBase
+  // =============
+  // > send messages to rocketlaunchers and explorers
+  //
+  void informAboutEnemyBase() {
+    Message msg;
+    // for all messages
+    for (int i=0; i<messages.size(); i++) {
+      msg = messages.get(i);
+      if (msg.type == ASK_FOR_ENERGY) {
+        // if the message is a request for energy
+        if (energy > 1000 + msg.args[0]) {
+          // gives the requested amount of energy only if at least 1000 units of energy left after
+          giveEnergy(msg.alice, msg.args[0]);
+        }
+      } else if (msg.type == ASK_FOR_BULLETS) {
+        // if the message is a request for energy
+        if (energy > 1000 + msg.args[0] * bulletCost) {
+          // gives the requested amount of bullets only if at least 1000 units of energy left after
+          giveBullets(msg.alice, msg.args[0]);
+        }
+      } else if (msg.type == INFORM_ABOUT_TARGET) {
+        if(msg.args[2] == BASE){
+          brain[0].x = msg.args[0];
+          brain[0].y = msg.args[1];
+        }
       }
     }
     // clear the message queue
