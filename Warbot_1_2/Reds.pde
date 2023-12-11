@@ -148,7 +148,7 @@ class RedBase extends Base implements RedRobot {
     RocketLauncher rl = (RocketLauncher)oneOf(perceiveRobots(friend, LAUNCHER));
       if (rl!= null){
         // if one is seen, send a message with the localized ennemy base
-        PVector p;
+        PVector p = new PVector();
         p.x = brain[0].x;
         p.y = brain[0].y;
         informAboutXYTarget(rl, p);
