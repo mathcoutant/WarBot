@@ -753,7 +753,7 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
         right(180);
       } else {
         // if not next to the base, head towards it... 
-        heading = towards(bob) + random(-radians(20), radians(20));
+        heading = towards(bob);
         // ...and try to move forward
         tryToMoveForward();
       }
