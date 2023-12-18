@@ -47,6 +47,7 @@ class RedBase extends Base implements RedRobot {
     newHarvester();
     // 7 more harvesters to create
     brain[5].x = 7;
+    brain[5].y = 5;
     brain[0].z = 1;
   }
 
@@ -706,6 +707,7 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
     // look for the closest ennemy robot
     ArrayList<Robot> robots = perceiveRobots(ennemy);
     Robot possibleTarget = null;
+    if(robots != null){
     for(Robot r : robots){
        if(possibleTarget == null){
          possibleTarget = r;
@@ -722,16 +724,32 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
         }
       }
     }
+    }
      if (possibleTarget != null) {
+       
+      if(possibleTarget.who == brain[4].z){
+        // We were already locked on this target, try to intercept
+        PVector target = tryIntercepting(possibleTarget);
+        
+        brain[0].x = target.x;
+        brain[0].y = target.y;
+        brain[0].z = target.z;
+        
+        
+      }
+      else {
       // if one found, record the position and breed of the target
       brain[0].x = possibleTarget.pos.x;
       brain[0].y = possibleTarget.pos.y;
       brain[0].z = possibleTarget.breed;
+      }
       // locks the target
       brain[4].y = 1;
+      brain[4].z = possibleTarget.who;
     } else
       // no target found
       brain[4].y = 0;
+      brain[4].z = 0;
   }
 
   //
@@ -745,6 +763,41 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
   //
   boolean target() {
     return (brain[4].y == 1);
+  }
+  
+  PVector tryIntercepting(Robot r){
+    float Vb = bulletSpeed;
+    float Vt = r.speed;
+    PVector Vr = new PVector(r.pos.x - brain[0].x, r.pos.y - brain[0].y);
+    PVector D = new PVector(pos.x - r.pos.x,pos.y - r.pos.y);
+   
+    float a = Vb*Vb - Vt*Vt;
+    float b = 2*D.dot(Vr);
+    float c = -D.dot(D);
+    
+    float determinant = b*b - 4*a*c;
+    float t1 = (-b + sqrt(determinant))/(2*a);
+    float t2 = (-b - sqrt(determinant))/(2*a);
+    float t;
+    if(t1 < 0 && t2 < 0){
+      print("Eeeuh, bizarre mon gars");
+      return new PVector(r.pos.x,r.pos.y);
+    }
+    else if(t1 < 0 && t2 > 0){
+      t = t2;      
+    }
+    else if(t2 < 0 && t1 > 0){
+     t = t1; 
+    }
+    else if(t2 < t1){
+     t = t2;
+    }
+    else{
+     t = t1; 
+    }
+    
+    PVector Pi = new PVector(r.pos.x + Vr.x * t, r.pos.y + Vr.y * t);
+    return Pi;
   }
 
   //
