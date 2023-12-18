@@ -47,7 +47,7 @@ class RedBase extends Base implements RedRobot {
     newHarvester();
     // 7 more harvesters to create
     brain[5].x = 7;
-    brain[5].y = 0;
+    brain[5].y = 5;
     brain[5].z = 0;
     brain[0].z = 1;
   }
@@ -661,9 +661,18 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
       // try to find a target
       selectTarget();
       // if target identified
-      if (target())
+      if (target()) {
         // shoot on the target
+        int angle = 80;
+        if (distance(brain[0]) < 2)
+          angle = 90;
         launchBullet(towards(brain[0]));
+        heading = towards(brain[0]);
+        right(angle);
+        forward(speed*0.9);
+        left(angle);
+        heading = towards(brain[0]);
+      }
       else if(brain[4].z == 1){
         moveToTarget();
       }
