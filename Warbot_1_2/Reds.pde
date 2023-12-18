@@ -704,12 +704,29 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
   //
   void selectTarget() {
     // look for the closest ennemy robot
-    Robot bob = (Robot)minDist(perceiveRobots(ennemy));
-    if (bob != null) {
+    ArrayList<Robot> robots = perceiveRobots(ennemy);
+    Robot possibleTarget = null;
+    for(Robot r : robots){
+       if(possibleTarget == null){
+         possibleTarget = r;
+         continue;
+        }
+      if(r.breed == LAUNCHER && possibleTarget.breed == HARVESTER || possibleTarget.breed == EXPLORER){
+         possibleTarget = r;
+         continue;
+      }
+      if (r.breed == possibleTarget.breed){
+        if(r.energy < possibleTarget.energy){
+          possibleTarget = r;
+          continue;
+        }
+      }
+    }
+     if (possibleTarget != null) {
       // if one found, record the position and breed of the target
-      brain[0].x = bob.pos.x;
-      brain[0].y = bob.pos.y;
-      brain[0].z = bob.breed;
+      brain[0].x = possibleTarget.pos.x;
+      brain[0].y = possibleTarget.pos.y;
+      brain[0].z = possibleTarget.breed;
       // locks the target
       brain[4].y = 1;
     } else
