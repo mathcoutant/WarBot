@@ -48,6 +48,7 @@ class RedBase extends Base implements RedRobot {
     // 7 more harvesters to create
     brain[5].x = 7;
     brain[5].y = 5;
+    brain[5].z = 0;
     brain[0].z = 1;
   }
 
@@ -140,7 +141,7 @@ class RedBase extends Base implements RedRobot {
   //
   // informAboutEnemyBase
   // =============
-  // > send messages to rocketlaunchers and explorers
+  // > send messages to rocketlaunchers
   //
   void informAboutEnemyBase() {
     if(brain[0].z == 1){
@@ -660,9 +661,18 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
       // try to find a target
       selectTarget();
       // if target identified
-      if (target())
+      if (target()) {
         // shoot on the target
+        int angle = 80;
+        if (distance(brain[0]) < 2)
+          angle = 90;
         launchBullet(towards(brain[0]));
+        heading = towards(brain[0]);
+        right(angle);
+        forward(speed*0.9);
+        left(angle);
+        heading = towards(brain[0]);
+      }
       else if(brain[4].z == 1){
         moveToTarget();
       }
@@ -678,7 +688,15 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
     for (int i=0; i<messages.size(); i++) {
       msg = messages.get(i);
       if (msg.type == INFORM_ABOUT_TARGET) {
-        // if the message is a request for energy
+        if(!target()){
+           brain[0].x = msg.args[0];
+           brain[0].y = msg.args[1];
+           brain[0].z = msg.args[2];
+           brain[4].z = 1;
+        }
+      }
+      if (msg.type == INFORM_ABOUT_XYTARGET) {
+        // coordinates of the enemy base
         if(!target()){
            brain[0].x = msg.args[0];
            brain[0].y = msg.args[1];
@@ -823,7 +841,7 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
         right(180);
       } else {
         // if not next to the base, head towards it... 
-        heading = towards(bob) + random(-radians(20), radians(20));
+        heading = towards(bob);
         // ...and try to move forward
         tryToMoveForward();
       }
