@@ -772,7 +772,7 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
          possibleTarget = r;
          continue;
         }
-      if(r.breed == LAUNCHER && possibleTarget.breed == HARVESTER || possibleTarget.breed == EXPLORER){
+      if(r.breed == LAUNCHER && (possibleTarget.breed == HARVESTER || possibleTarget.breed == EXPLORER)){
          possibleTarget = r;
          continue;
       }
@@ -805,7 +805,7 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
       // locks the target
       brain[4].y = 1;
       brain[4].z = possibleTarget.who;
-    } else
+    } else 
       // no target found
       brain[4].y = 0;
       brain[4].z = 0;
