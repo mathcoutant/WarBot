@@ -772,7 +772,11 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
          possibleTarget = r;
          continue;
         }
-      if(r.breed == LAUNCHER && (possibleTarget.breed == HARVESTER || possibleTarget.breed == EXPLORER)){
+       if(r.breed == BASE){
+         possibleTarget = r;
+         continue;
+        }
+      if(r.breed == LAUNCHER && (possibleTarget.breed == HARVESTER || possibleTarget.breed == EXPLORER || possibleTarget.breed == BASE)){
          possibleTarget = r;
          continue;
       }
