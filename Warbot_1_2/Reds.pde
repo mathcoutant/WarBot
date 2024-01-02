@@ -48,7 +48,7 @@ class RedBase extends Base implements RedRobot {
     // 7 more harvesters to create
     brain[5].x = 7;
     brain[5].y = 5;
-    brain[5].z = 0;
+    brain[5].z = 3;
     brain[0].z = 1;
   }
 
@@ -102,6 +102,8 @@ class RedBase extends Base implements RedRobot {
       if (perceiveRobotsInCone(friend, heading) == null)
         launchFaf(bob);
     }
+    
+    informAboutEnemyBase();
   }
 
   //
@@ -131,7 +133,13 @@ class RedBase extends Base implements RedRobot {
           brain[0].x = msg.args[0];
           brain[0].y = msg.args[1];
           brain[0].z = 0;
+          brain[5].y++;
         }
+      } else if (msg.type == INFORM_ABOUT_XYTARGET) {
+        brain[0].x = msg.args[0];
+        brain[0].y = msg.args[1];
+        brain[0].z = 0;
+        brain[5].y++;
       }
     }
     // clear the message queue
@@ -184,6 +192,9 @@ class RedExplorer extends Explorer implements RedRobot {
   // > called at the creation of the agent
   //
   void setup() {
+    brain[2].x = 0;
+    brain[2].y = 0;
+    brain[2].z = 0;
   }
 
   //
@@ -204,7 +215,7 @@ class RedExplorer extends Explorer implements RedRobot {
       brain[4].x = 1;
 
     // depending on the state of the robot
-    if (brain[4].x == 1) {
+    if (brain[4].x == 1 || brain[2].z == 1) {
       // go back to base...
       goBackToBase();
     } else {
@@ -214,6 +225,11 @@ class RedExplorer extends Explorer implements RedRobot {
 
     // tries to localize ennemy bases
     lookForEnnemyBase();
+    
+    if(brain[2].z == 1){
+    // tries to contact firendly base
+      contactBase();
+    }
     // inform harvesters about food sources
     driveHarvesters();
     // inform rocket launchers about targets
@@ -334,6 +350,12 @@ class RedExplorer extends Explorer implements RedRobot {
         // if a rocket launcher is seen, send a message with the localized ennemy robot
         informAboutTarget(rocky, bob);
     }
+    if (brain[2].z == 1) {
+      RocketLauncher rocky = (RocketLauncher)oneOf(perceiveRobots(friend, LAUNCHER));
+      if (rocky != null)
+        // if a rocket launcher is seen, send a message with the localized ennemy robot
+        informAboutTarget(rocky, bob);
+    }
   }
 
   //
@@ -346,16 +368,35 @@ class RedExplorer extends Explorer implements RedRobot {
     // look for an ennemy base
     Base babe = (Base)oneOf(perceiveRobots(ennemy, BASE));
     if (babe != null) {
+      brain[2].x = babe.pos.x;
+      brain[2].y = babe.pos.y;
+      brain[2].z = 1;
       // if one is seen, look for a friend explorer
       Explorer explo = (Explorer)oneOf(perceiveRobots(friend, EXPLORER));
       if (explo != null)
         // if one is seen, send a message with the localized ennemy base
         informAboutTarget(explo, babe);
+      RocketLauncher rocky = (RocketLauncher)oneOf(perceiveRobots(friend, LAUNCHER));
+      if (rocky != null)
+        // if a rocket launcher is seen, send a message with the localized ennemy robot
+        informAboutTarget(rocky, babe);
       // look for a friend base
       Base basy = (Base)oneOf(perceiveRobots(friend, BASE));
       if (basy != null)
         // if one is seen, send a message with the localized ennemy base
         informAboutTarget(basy, babe);
+    }
+  }
+  
+  void contactBase() {
+    Base basy = (Base)oneOf(perceiveRobots(friend, BASE));
+    if (basy != null) {
+      // if one is seen, send a message with the localized ennemy base
+      PVector p = new PVector();
+      p.x = brain[2].x;
+      p.y = brain[2].y;
+      informAboutXYTarget(basy, p);
+      brain[2].z = 0;
     }
   }
 
@@ -377,7 +418,7 @@ class RedExplorer extends Explorer implements RedRobot {
 
 ///////////////////////////////////////////////////////////////////////////
 //
-// The code for the green harvesters
+// The code for the red harvesters
 //
 ///////////////////////////////////////////////////////////////////////////
 // map of the brain:
@@ -700,7 +741,7 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
         if(!target()){
            brain[0].x = msg.args[0];
            brain[0].y = msg.args[1];
-           brain[0].z = msg.args[2];
+           //brain[0].z = msg.args[2];
            brain[4].z = 1;
         }
       }
