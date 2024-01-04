@@ -714,9 +714,6 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
         left(angle);
         heading = towards(brain[0]);
       }
-      else if(brain[4].z == 1){
-        moveToTarget();
-      }
       else
         // else explore randomly
         randomMove(45);
@@ -796,7 +793,10 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
         
         brain[0].x = target.x;
         brain[0].y = target.y;
-        brain[0].z = target.z;
+        
+        //brain[0].x = possibleTarget.pos.x;
+        //brain[0].y = possibleTarget.pos.y;
+        //brain[0].z = possibleTarget.breed;
         
         
       }
@@ -809,10 +809,11 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
       // locks the target
       brain[4].y = 1;
       brain[4].z = possibleTarget.who;
-    } else 
+    } else {
       // no target found
       brain[4].y = 0;
       brain[4].z = 0;
+    }
   }
 
   //
@@ -837,30 +838,55 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
     float a = Vb*Vb - Vt*Vt;
     float b = 2*D.dot(Vr);
     float c = -D.dot(D);
-    
-    float determinant = b*b - 4*a*c;
-    float t1 = (-b + sqrt(determinant))/(2*a);
-    float t2 = (-b - sqrt(determinant))/(2*a);
     float t;
-    if(t1 < 0 && t2 < 0){
-      print("Eeeuh, bizarre mon gars");
-      return new PVector(r.pos.x,r.pos.y);
+
+    println(a);
+    println(b);
+    println(c);
+    
+    
+    if(a == 0 && b != 0){
+      t = - c / b;
     }
-    else if(t1 < 0 && t2 > 0){
-      t = t2;      
-    }
-    else if(t2 < 0 && t1 > 0){
-     t = t1; 
-    }
-    else if(t2 < t1){
-     t = t2;
-    }
-    else{
-     t = t1; 
+    else if (b == 0) {
+      return new PVector(r.pos.x,r.pos.y,r.who); 
     }
     
+    else {
+      
+      float determinant = b*b - 4*a*c;
+      if(determinant < 0) {
+       print("Eeeuh, bizarre mon gars");
+        return new PVector(r.pos.x,r.pos.y,r.who); 
+      }
+      
+      float t1 = (-b + sqrt(determinant))/(2*a);
+      float t2 = (-b - sqrt(determinant))/(2*a);
+      if(t1 < 0 && t2 < 0){
+        print("Eeeuh, bizarre mon gars");
+        return new PVector(r.pos.x,r.pos.y,r.who);
+      }
+      else if(t1 < 0 && t2 > 0){
+        t = t2;      
+      }
+      else if(t2 < 0 && t1 > 0){
+       t = t1; 
+      }
+      else if(t2 < t1){
+       t = t2;
+      }
+      else{
+       t = t1; 
+      }
+    
+    }
     PVector Pi = new PVector(r.pos.x + Vr.x * t, r.pos.y + Vr.y * t);
-    return Pi;
+    println(Pi);
+    if(Float.isFinite(Pi.x) && Float.isFinite(Pi.y)){
+     return Pi; 
+    } else {
+     return new PVector(r.pos.x,r.pos.y,r.who);
+    }
   }
 
   //

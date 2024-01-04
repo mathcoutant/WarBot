@@ -42,6 +42,7 @@ void settings() {
 void setup() {
   imageMode(CENTER);
   textAlign(CENTER, CENTER);
+  //frameRate(10);
   if (!tournamentMode) {
     game = new Simulation();
     game.setup();
