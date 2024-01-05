@@ -91,8 +91,8 @@ class RedBase extends Base implements RedRobot {
     // creates new bullets and fafs if the stock is low and enought energy
     if ((bullets < 10) && (energy > 1000))
       newBullets(50);
-    if ((bullets < 10) && (energy > 1000))
-      newFafs(10);
+    if ((fafs < 5) && (energy > 1000))
+      newFafs(5);
 
     // if ennemy rocket launcher in the area of perception
     Robot bob = (Robot)minDist(perceiveRobots(ennemy, LAUNCHER));
