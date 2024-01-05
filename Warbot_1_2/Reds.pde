@@ -853,11 +853,6 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
     float b = 2*D.dot(Vr);
     float c = -D.dot(D);
     float t;
-
-    println(a);
-    println(b);
-    println(c);
-    
     
     if(a == 0 && b != 0){
       t = - c / b;
@@ -870,14 +865,12 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
       
       float determinant = b*b - 4*a*c;
       if(determinant < 0) {
-       print("Eeeuh, bizarre mon gars");
         return new PVector(r.pos.x,r.pos.y,r.who); 
       }
       
       float t1 = (-b + sqrt(determinant))/(2*a);
       float t2 = (-b - sqrt(determinant))/(2*a);
       if(t1 < 0 && t2 < 0){
-        print("Eeeuh, bizarre mon gars");
         return new PVector(r.pos.x,r.pos.y,r.who);
       }
       else if(t1 < 0 && t2 > 0){
@@ -895,7 +888,6 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
     
     }
     PVector Pi = new PVector(r.pos.x + Vr.x * t, r.pos.y + Vr.y * t);
-    println(Pi);
     if(Float.isFinite(Pi.x) && Float.isFinite(Pi.y)){
      return Pi; 
     } else {
