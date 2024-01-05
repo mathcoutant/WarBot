@@ -133,13 +133,15 @@ class RedBase extends Base implements RedRobot {
           brain[0].x = msg.args[0];
           brain[0].y = msg.args[1];
           brain[0].z = 0;
-          brain[5].y++;
+          if(brain[5].y == 0)
+            brain[5].y++;
         }
       } else if (msg.type == INFORM_ABOUT_XYTARGET) {
         brain[0].x = msg.args[0];
         brain[0].y = msg.args[1];
         brain[0].z = 0;
-        brain[5].y++;
+        if(brain[5].y == 0)
+            brain[5].y++;
       }
     }
     // clear the message queue
@@ -680,6 +682,7 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
   // > called at the creation of the agent
   //
   void setup() {
+     brain[2].z = 0;
   }
 
   //
@@ -714,9 +717,21 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
         left(angle);
         heading = towards(brain[0]);
       }
-      else
-        // else explore randomly
-        randomMove(45);
+      else {
+        if(brain[2].z == 1) {
+          heading = towards(brain[2]);
+          forward(speed);
+          if (distance(brain[2]) < 1) {
+            Base babe = (Base)oneOf(perceiveRobots(ennemy, BASE));
+            if (babe == null) {
+              brain[2].z = 0;
+            }
+          }
+        } else {
+          // else explore randomly
+          randomMove(45);
+        }
+      }
     }
   }
 
@@ -736,10 +751,9 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
       if (msg.type == INFORM_ABOUT_XYTARGET) {
         // coordinates of the enemy base
         if(!target()){
-           brain[0].x = msg.args[0];
-           brain[0].y = msg.args[1];
-           //brain[0].z = msg.args[2];
-           brain[4].z = 1;
+           brain[2].x = msg.args[0];
+           brain[2].y = msg.args[1];
+           brain[2].z = 1;
         }
       }
     }
