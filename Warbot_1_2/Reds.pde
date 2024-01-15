@@ -5,6 +5,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////
 
+final int INFORM_ABOUT_FULL = 5;
+
+
+
 class RedTeam extends Team {
   final int MY_CUSTOM_MSG = 5;
   
@@ -895,7 +899,6 @@ class RedRocketLauncher extends RocketLauncher implements RedRobot {
     
     }
     PVector Pi = new PVector(r.pos.x + Vr.x * t, r.pos.y + Vr.y * t);
-    println(Pi);
     if(Float.isFinite(Pi.x) && Float.isFinite(Pi.y)){
      return Pi; 
     } else {
